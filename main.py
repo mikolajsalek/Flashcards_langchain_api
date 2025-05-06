@@ -1,6 +1,6 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, Query
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from app.summarizer import summarize_text
@@ -13,6 +13,7 @@ load_dotenv()
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
+flashcards_content = {}
 
 class SummaryRequest(BaseModel):
     content: str
@@ -24,10 +25,15 @@ async def read_form(request: Request):
     return templates.TemplateResponse("form.html", {"request": request})
 
 
+
 @app.post("/summarize", response_class=HTMLResponse)
 async def summarize(request: Request, content: str = Form(...), mode: str = Form(...)):
+    global flashcards_content
     try:
         result = summarize_text(content, mode)
+        if mode == 'flashcards':
+            flashcards_content = result
+            #print(flashcards_content)
     except Exception as e:
         result = f"Wystąpił błąd: {str(e)}"
     return templates.TemplateResponse(
@@ -41,12 +47,15 @@ async def summarize(request: Request, content: str = Form(...), mode: str = Form
     )
 
 @app.get("/flashcards", response_class=HTMLResponse)
-async def flashcards(request: Request):
-    if not content:
-        content = 'Tutaj będzie tekst wygenerowany przez użytkownika lub proces.'
+async def flashcards(request: Request, content: str = Query(default="Placeholder")):
+    global flashcards_content
 
-    flashcards = generate_flashcards(content)
-    return templates.TemplateResponse("flashcards.html", {"request": request, "flashcards": flashcards})
+    print("Flashcards:", flashcards_content)  # Upewnij się, że są dane
+
+    return templates.TemplateResponse("flashcards.html", {
+        "request": request,
+        "flashcards": flashcards_content
+    })
 
 if __name__ == "__main__":
     import uvicorn

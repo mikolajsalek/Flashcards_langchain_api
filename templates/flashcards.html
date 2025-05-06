@@ -23,10 +23,13 @@
             border-radius: 10px;
             cursor: pointer;
             transition: transform 0.3s;
+            margin-bottom: 10px;
+            position: relative;
+            transform-style: preserve-3d;  /* Dodaj to, żeby 3D flip działał */
         }
 
         .flashcard.flipped {
-            transform: rotateY(180deg);
+            transform: rotateY(180deg);  /* Przewraca fiszkę na tył */
         }
 
         .front, .back {
@@ -42,22 +45,22 @@
         }
 
         .back {
-            transform: rotateY(180deg);
+            transform: rotateY(180deg);  /* Tył jest obrócony o 180 stopni */
         }
     </style>
 </head>
 <body>
     <div class="flashcard-container">
         <h1>Flashcards Mode</h1>
-        <div class="flashcard" id="flashcard1">
-            <div class="front">Pytanie 1</div>
-            <div class="back">Odpowiedź 1</div>
-        </div>
-        <div class="flashcard" id="flashcard2">
-            <div class="front">Pytanie 2</div>
-            <div class="back">Odpowiedź 2</div>
-        </div>
-        <!-- Można dodać więcej fiszek w podobny sposób -->
+        
+        <!-- Wyświetl fiszki -->
+        {% for question, answer in flashcards.items() %}
+            <div class="flashcard">
+                <div class="front">{{ question }}</div>
+                <div class="back">{{ answer }}</div>
+            </div>
+        {% endfor %}
+        
     </div>
 
     <script>

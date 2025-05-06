@@ -1,6 +1,7 @@
 from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 import os
+import re
 
 load_dotenv()
 
@@ -13,7 +14,7 @@ llm = ChatGroq(
 PROMPTS = {
     "summary": "Stwórz krótkie streszczenie poniższego tekstu:\n{content}",
     "bullet-points": "Zamień poniższy tekst na listę wypunktowaną z kluczowymi informacjami:\n{content}",
-    "flashcards": "Na podstawie poniższego tekstu wygeneruj fiszki w formacie:\nPytanie: ...\nOdpowiedź: ...\n\nTekst:\n{content}"
+    "flashcards": "Proszę wygenerować fiszki w formacie "'Pytanie: ... Odpowiedź: ...'" na podstawie poniższego tekstu: {content}, w odpowiedzi uwzględnij tylko pytania i odpowiedzi"
 }
 
 
@@ -23,17 +24,14 @@ def summarize_text(content: str, mode: str):
     
     if mode == "bullet-points":
         response = response.replace("*", "•")
-
+    elif mode == 'flashcards':
+        return parse_flashcards(response)
 
     return response
 
-def generate_flashcards(content: str):
-    points = content.split("\n")  # Rozdzielamy punktu na oddzielne linie
-    flashcards = []
-
-    for point in points:
-        question = f"Co oznacza: {point}?"
-        answer = f"To: {point}"
-        flashcards.append({"question": question, "answer": answer})
-
+def parse_flashcards(text: str) -> dict:
+    flashcards = {}
+    pairs = re.findall(r"Pytanie:\s*(.*?)\nOdpowiedź:\s*(.*?)(?:\n|$)", text, re.DOTALL)
+    for question, answer in pairs:
+        flashcards[question.strip()] = answer.strip()
     return flashcards
