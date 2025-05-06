@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards</title>
+    <style>
+        .flashcard-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .flashcard {
+            width: 300px;
+            height: 200px;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .front, .back {
+            position: absolute;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+        }
+
+        .back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="flashcard-container">
+        <h1>Flashcards Mode</h1>
+        <div class="flashcard" id="flashcard1">
+            <div class="front">Pytanie 1</div>
+            <div class="back">Odpowiedź 1</div>
+        </div>
+        <div class="flashcard" id="flashcard2">
+            <div class="front">Pytanie 2</div>
+            <div class="back">Odpowiedź 2</div>
+        </div>
+        <!-- Można dodać więcej fiszek w podobny sposób -->
+    </div>
+
+    <script>
+        const flashcards = document.querySelectorAll('.flashcard');
+
+        flashcards.forEach(flashcard => {
+            flashcard.addEventListener('click', () => {
+                flashcard.classList.toggle('flipped');
+            });
+        });
+    </script>
+</body>
+</html>
